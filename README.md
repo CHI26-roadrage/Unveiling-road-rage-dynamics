@@ -1,1 +1,18 @@
-# Unveiling-raod-rage-dynamics
+# Unveiling Road Rage Dynamics: Recreating and Modeling Road Rage in Audiovisual and Simulating Environments Based on Real-World Footage
+
+<div style="display: flex; justify-content: space-between;">
+  <div style="flex: 1; padding: 10px;">
+    <img src="左边GIF图片的URL" alt="R3-Ftg Dataset" style="width: 100%; height: auto;">
+    <p style="text-align: center;">R<sup>3</sup>-Ftg Dataset</p>
+  </div>
+
+  <div style="flex: 1; padding: 10px;">
+    <img src="右边图片的URL" alt="Self Report / EEG Response" style="width: 100%; height: auto;">
+    <p style="text-align: center;">Self Report / EEG Response</p>
+  </div>
+</div>
+
+## Abstract
+
+Road rage poses great risks to road safety. Digital interventions show promising potential in regulating rage-related maladaptive behaviors to mitigate such risks. This requires a clear understanding of road rage dynamics. Unlike prior work using artificial scenarios, we build the first-of-its-kind Real Road Rage Footage (R<sup>3</sup>-Ftg) dataset and recreate some of its most risky and anger-inducing scenes in both audiovisual and simulating environments. Then we recruit 60 participants to experience those scenes and record their rage in subjective and objective measures. We find: (1) Road rage has been successfully induced, and simulation provides more realistic experiences. (2) Slow-rise-fast-decay phenomena are observed in both stimuli, suggesting a spring-like process of road rage. (3) This process can be modeled using second-order damped oscillation distributions. To our knowledge, we are the first to model road rage dynamics in authentic scenarios recreated from real-world events, enabling a paradigm shift from learning-based to model-based digital solutions.
+
