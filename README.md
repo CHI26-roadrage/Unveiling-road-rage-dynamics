@@ -7,7 +7,7 @@
   </div>
 
   <div style="flex: 1; padding: 10px;">
-    <img src="IMG_Scene.png" alt="Self Report / EEG Response" style="width: 100%; height: auto;">
+    <img src="IMG_Scene.png" alt="Self Report / EEG Response" style="width: 50%; height: auto;">
     <p style="text-align: center;">Self Report / EEG Response</p>
   </div>
 </div>
