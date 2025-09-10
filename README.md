@@ -2,7 +2,7 @@
 
 <div style="display: flex; justify-content: space-between;">
   <div style="flex: 1; text-align: center;">
-    <img src="IMG_0974.GIF" alt="R3-Ftg Dataset" style="width: 100%; height: auto;">
+    <img src="IMG_0974.GIF" alt="R3-Ftg Dataset" style="width: 50%; height: auto;">
     <p>R<sup>3</sup>-Ftg Dataset</p>
   </div>
 
