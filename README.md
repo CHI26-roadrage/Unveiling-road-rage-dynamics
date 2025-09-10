@@ -1,14 +1,14 @@
 # Unveiling Road Rage Dynamics: Recreating and Modeling Road Rage in Audiovisual and Simulating Environments Based on Real-World Footage
 
 <div style="display: flex; justify-content: space-between;">
-  <div style="flex: 1; padding: 10px;">
-    <img src="IMG_0974.GIF" alt="R3-Ftg Dataset" style="width: 100%; height: auto;">
-    <p style="text-align: center;">R<sup>3</sup>-Ftg Dataset</p>
+  <div style="flex: 1; text-align: center;">
+    <img src="IMG_0974.GIF" alt="R3-Ftg Dataset" style="width: 90%; height: auto;">
+    <p>R<sup>3</sup>-Ftg Dataset</p>
   </div>
 
-  <div style="flex: 1; padding: 10px;">
-    <img src="IMG_Scene.png" alt="Self Report / EEG Response" style="width: 50%; height: auto;">
-    <p style="text-align: center;">Self Report / EEG Response</p>
+  <div style="flex: 1; text-align: center;">
+    <img src="IMG_Scene.png" alt="Self Report / EEG Response" style="width: 60%; height: auto;">
+    <p>Self Report / EEG Response</p>
   </div>
 </div>
 
