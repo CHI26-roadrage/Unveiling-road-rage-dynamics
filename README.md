@@ -2,12 +2,12 @@
 
 <div style="display: flex; justify-content: space-between;">
   <div style="flex: 1; padding: 10px;">
-    <img src="左边GIF图片的URL" alt="R3-Ftg Dataset" style="width: 100%; height: auto;">
+    <img src="IMG_0974.GIF" alt="R3-Ftg Dataset" style="width: 100%; height: auto;">
     <p style="text-align: center;">R<sup>3</sup>-Ftg Dataset</p>
   </div>
 
   <div style="flex: 1; padding: 10px;">
-    <img src="右边图片的URL" alt="Self Report / EEG Response" style="width: 100%; height: auto;">
+    <img src="IMG_Scene.png" alt="Self Report / EEG Response" style="width: 100%; height: auto;">
     <p style="text-align: center;">Self Report / EEG Response</p>
   </div>
 </div>
