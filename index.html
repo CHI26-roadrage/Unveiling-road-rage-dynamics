@@ -1,17 +1,93 @@
-# Unveiling Road Rage Dynamics: Recreating and Modeling Road Rage in Audiovisual and Simulating Environments Based on Real-World Footage
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unveiling Road Rage Dynamics</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
 
-<div style="display: flex; justify-content: space-between;">
-  <div style="flex: 1; text-align: center;">
-    <img src="IMG_0974.GIF" alt="R3-Ftg Dataset" style="width: 50%; height: auto;">
-    <p>R<sup>3</sup>-Ftg Dataset</p>
+    h1 {
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      line-height: 1.4;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .image-box {
+      flex: 1;
+      text-align: center;
+    }
+
+    .image-box img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-box p {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .abstract {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 20px;
+      line-height: 1.8;
+      font-size: 1.1em;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      h1 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 标题 -->
+  <h1>Unveiling Road Rage Dynamics: Recreating and Modeling Road Rage in Audiovisual and Simulating Environments Based on Real-World Footage</h1>
+
+  <!-- 图片区域：左GIF右图 -->
+  <div class="container">
+    <div class="image-box">
+      <img src="IMG_0974.GIF" alt="R³-Ftg Dataset">
+      <p>R<sup>3</sup>-Ftg Dataset</p>
+    </div>
+    <div class="image-box">
+      <img src="IMG_Scene.png" alt="Self Report / EEG Response">
+      <p>Self Report / EEG Response</p>
+    </div>
   </div>
 
-  <div style="flex: 1; text-align: center;">
-    <img src="IMG_Scene.png" alt="Self Report / EEG Response" style="width: 50%; height: auto;">
-    <p>Self Report / EEG Response</p>
+  <!-- 摘要 -->
+  <div class="abstract">
+    <h2>Abstract</h2>
+    <p>
+      Road rage poses great risks to road safety. Digital interventions show promising potential in regulating rage-related maladaptive behaviors to mitigate such risks. This requires a clear understanding of road rage dynamics. Unlike prior work using artificial scenarios, we build the first-of-its-kind Real Road Rage Footage (R<sup>3</sup>-Ftg) dataset and recreate some of its most risky and anger-inducing scenes in both audiovisual and simulating environments. Then we recruit 60 participants to experience those scenes and record their rage in subjective and objective measures. We find: (1) Road rage has been successfully induced, and simulation provides more realistic experiences. (2) Slow-rise-fast-decay phenomena are observed in both stimuli, suggesting a spring-like process of road rage. (3) This process can be modeled using second-order damped oscillation distributions. To our knowledge, we are the first to model road rage dynamics in authentic scenarios recreated from real-world events, enabling a paradigm shift from learning-based to model-based digital solutions.
+    </p>
   </div>
-</div>
 
-## Abstract
-
-Road rage poses great risks to road safety. Digital interventions show promising potential in regulating rage-related maladaptive behaviors to mitigate such risks. This requires a clear understanding of road rage dynamics. Unlike prior work using artificial scenarios, we build the first-of-its-kind Real Road Rage Footage (R<sup>3</sup>-Ftg) dataset and recreate some of its most risky and anger-inducing scenes in both audiovisual and simulating environments. Then we recruit 60 participants to experience those scenes and record their rage in subjective and objective measures. We find: (1) Road rage has been successfully induced, and simulation provides more realistic experiences. (2) Slow-rise-fast-decay phenomena are observed in both stimuli, suggesting a spring-like process of road rage. (3) This process can be modeled using second-order damped oscillation distributions. To our knowledge, we are the first to model road rage dynamics in authentic scenarios recreated from real-world events, enabling a paradigm shift from learning-based to model-based digital solutions.
+</body>
+</html>
