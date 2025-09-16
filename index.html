@@ -69,7 +69,7 @@
       font-size: 1.05em;
     }
 
-    .abstract, .section, .dyn {
+    .abstract, .dyn {
       max-width: var(--maxw);
       margin: 28px auto;
       padding: 18px 20px;
@@ -80,7 +80,7 @@
       box-shadow: var(--shadow);
     }
 
-    .abstract h2, .section h2, .dyn h2 {
+    .abstract h2, .dyn h2 {
       margin: 0 0 10px;
       font-size: 1.25em;
     }
@@ -89,43 +89,6 @@
       color: var(--muted);
       font-size: 0.95em;
       margin-top: 6px;
-    }
-
-    .fig-card {
-      margin-top: 14px;
-      border: 1px solid #eef2f7;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #fff;
-    }
-    .fig-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: #fafbff;
-      border-bottom: 1px solid #eef2f7;
-      color: #374151;
-      font-size: 0.98rem;
-    }
-    .fig-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--primary);
-      box-shadow: 0 0 0 4px var(--primary-20) inset;
-    }
-    .fig-body {
-      padding: 10px;
-    }
-    .fig-body img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 8px;
-    }
-    .fig-caption {
-      margin-top: 8px;
-      color: #4b5563;
-      font-size: 0.95em;
     }
 
     /* chart */
@@ -204,7 +167,7 @@
       h1 {
         font-size: 1.35rem;
       }
-      .abstract, .section, .dyn {
+      .abstract, .dyn {
         font-size: 1rem;
         padding: 16px;
       }
@@ -237,38 +200,6 @@
     <p>
       Road rage poses great risks to road safety. Digital interventions show promising potential in regulating rage-related maladaptive behaviors to mitigate such risks. This requires a clear understanding of road rage dynamics. Unlike prior work using artificial scenarios, we build the first-of-its-kind Real Road Rage Footage (R<sup>3</sup>-Ftg) dataset and recreate some of its most risky and anger-inducing scenes in both audiovisual and simulating environments. Then we recruit 60 participants to experience those scenes and record their rage in subjective and objective measures. We find: (1) Road rage has been successfully induced, and simulation provides more realistic experiences. (2) Slow-rise-fast-decay phenomena are observed in both stimuli, suggesting a spring-like process of road rage. (3) This process can be modeled using second-order damped oscillation distributions. To our knowledge, we are the first to model road rage dynamics in authentic scenarios recreated from real-world events, enabling a paradigm shift from learning-based to model-based digital solutions.
     </p>
-
-    <!-- 摘要配图（JPG） -->
-    <div class="fig-card" aria-label="Main figure">
-      <div class="fig-head">
-        <span class="fig-dot" aria-hidden="true"></span>
-        <strong>Main Figure</strong>
-        <span class="muted" style="margin-left:auto;">fig1.jpg</span>
-      </div>
-      <div class="fig-body">
-        <img src="fig1.jpg" alt="Main figure illustration">
-        <div class="fig-caption">Main figure illustrating the study overview.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 新增说明区块（含 fig2） -->
-  <div class="section">
-    <h2>Simulation Reconstruction</h2>
-    <p>
-      Recreating road rage in the simulating environment using labels of physical/traffic conditions and interactions events from the R<sup>3</sup>-Ftg dataset. The experiments consists of driving through 3 routes: Route 1 (3 min) provided a neutral baseline with autonomous vehicles following traffic rules. At 3 min, it transitioned to Route 2 (5 min), featuring five ecologically valid road rage scenes reconstructed from top-3 footage. Route 3 (3 min) reinstated the neutral condition, mirroring Route 1’s behavior and compliance.
-    </p>
-    <div class="fig-card" aria-label="Simulation routes figure">
-      <div class="fig-head">
-        <span class="fig-dot" aria-hidden="true"></span>
-        <strong>Figure 2</strong>
-        <span class="muted" style="margin-left:auto;">fig2.JPG</span>
-      </div>
-      <div class="fig-body">
-        <img src="fig2.JPG" alt="Recreated routes and conditions in simulation">
-        <div class="fig-caption">Recreated neutral–rage–neutral sequence (Route 1 → Route 2 → Route 3).</div>
-      </div>
-    </div>
   </div>
 
   <!-- 动态曲线 -->
@@ -291,7 +222,6 @@
       0.111, 0.111, 0.333333333, 1.222222222, 2.277777778,
       2.5, 2.555555556, 2.222222222, 0.111111111, 0.055555556, 0.055555556
     ];
-    // Minutes labeling from 1 to 11
     const minutes = Array.from({length: 11}, (_, i) => i + 1);
 
     // Canvas setup with devicePixelRatio for crisp lines
@@ -305,47 +235,33 @@
       const cssHeight = canvas.clientHeight;
       canvas.width = Math.floor(cssWidth * dpr);
       canvas.height = Math.floor(cssHeight * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       draw();
     }
     window.addEventListener('resize', resizeCanvas);
 
-    // Chart state
     const state = {
       padding: { top: 24, right: 18, bottom: 40, left: 50 },
-      t: 0,          // animation progress [0..1]
+      t: 0,
       hoverIdx: -1
     };
 
-    // Easing: slow rise, fast decay
-    // We'll modulate per-segment speed: earlier segments slower, later (decay) segments faster.
-    // Create a per-segment speed profile based on slope (rise vs decay).
+    // Build segment speed profile for slow-rise, fast-decay
     function buildSegmentSpeeds(values) {
-      const speeds = []; // higher speed = faster time progression on that segment
+      const speeds = [];
+      const vmax = Math.max(...values);
       for (let i = 0; i < values.length - 1; i++) {
         const dy = values[i + 1] - values[i];
-        // Base speed
-        let s = 1;
-        if (dy >= 0) {
-          // Rising: slow -> smaller speed
-          s = 0.6; // slower progression
-        } else {
-          // Decay: fast -> larger speed
-          s = 1.8;
-        }
-        // Slightly weight by magnitude
-        s *= 0.8 + 0.2 * Math.min(3, Math.abs(dy) / Math.max(0.001, Math.max(...values)));
+        let s = dy >= 0 ? 0.6 : 1.8; // rise slow, decay fast
+        s *= 0.8 + 0.2 * Math.min(3, Math.abs(dy) / Math.max(0.001, vmax));
         speeds.push(s);
       }
       return speeds;
     }
-
     const segSpeeds = buildSegmentSpeeds(data);
 
-    // Build a cumulative time map so that total normalized time = 1
     function buildTimeMap(speeds) {
-      // Each of the N-1 segments gets an inverse of speed as duration weight (slower speed => larger duration)
-      const weights = speeds.map(s => 1 / s);
+      const weights = speeds.map(s => 1 / s); // slower => longer duration
       const sum = weights.reduce((a, b) => a + b, 0);
       const cum = [0];
       let acc = 0;
@@ -353,17 +269,15 @@
         acc += w / sum;
         cum.push(acc);
       }
-      cum[cum.length - 1] = 1; // ensure end at 1
-      return cum; // length N (points)
+      cum[cum.length - 1] = 1;
+      return cum;
     }
-
     const timeMap = buildTimeMap(segSpeeds);
-    // For global easing (gentle in-out), apply an S-curve to t before mapping to segment
+
     function easeInOut(t) {
       return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
     }
 
-    // Derived scales
     function getScales() {
       const W = canvas.clientWidth;
       const H = canvas.clientHeight;
@@ -371,11 +285,9 @@
       const iw = W - left - right;
       const ih = H - top - bottom;
 
-      // X: minutes 1..11 mapped to indices 0..10
       const xMin = 1, xMax = 11;
       const x = (m) => left + (m - xMin) / (xMax - xMin) * iw;
 
-      // Y baseline at 0
       const yMin = 0;
       const yMax = Math.max(...data) * 1.1;
       const y = (v) => top + (1 - (v - yMin) / (yMax - yMin)) * ih;
@@ -383,7 +295,21 @@
       return { x, y, iw, ih, W, H, xMin, xMax, yMin, yMax };
     }
 
-    // Ticks
+    function drawBackgroundPhases(scales) {
+      const { x } = scales;
+      const { top, bottom } = state.padding;
+      const H = canvas.clientHeight;
+
+      ctx.save();
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
+      ctx.fillRect(x(1), top, x(3) - x(1), H - top - bottom);
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-rage').trim();
+      ctx.fillRect(x(3), top, x(8) - x(3), H - top - bottom);
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
+      ctx.fillRect(x(8), top, x(11) - x(8), H - top - bottom);
+      ctx.restore();
+    }
+
     function niceTicks(min, max, count) {
       const span = max - min;
       if (span <= 0) return { ticks: [min] };
@@ -399,26 +325,7 @@
       const niceMax = Math.floor(max / step) * step;
       const ticks = [];
       for (let v = niceMin; v <= niceMax + 1e-9; v += step) ticks.push(Number(v.toFixed(10)));
-      return { ticks, step, niceMin, niceMax };
-    }
-
-    function drawBackgroundPhases(scales) {
-      const { x } = scales;
-      const { top, bottom, left, right } = state.padding;
-      const H = canvas.clientHeight;
-
-      // Phases: [1,3] safe, (3,8] rage, (8,11] safe
-      ctx.save();
-      // Safe 1–3
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
-      ctx.fillRect(x(1), top, x(3) - x(1), H - top - bottom);
-      // Rage 3–8
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-rage').trim();
-      ctx.fillRect(x(3), top, x(8) - x(3), H - top - bottom);
-      // Safe 8–11
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
-      ctx.fillRect(x(8), top, x(11) - x(8), H - top - bottom);
-      ctx.restore();
+      return { ticks };
     }
 
     function drawAxesGrid(scales) {
@@ -427,7 +334,7 @@
 
       ctx.clearRect(0, 0, W, H);
 
-      // Background phases
+      // Phases
       drawBackgroundPhases(scales);
 
       // Grid
@@ -444,7 +351,6 @@
         ctx.stroke();
       });
 
-      // Minute ticks: 1..11
       for (let m = 1; m <= 11; m++) {
         const xx = x(m);
         ctx.beginPath();
@@ -458,12 +364,10 @@
       ctx.save();
       ctx.strokeStyle = '#9ca3af';
       ctx.lineWidth = 1.2;
-      // Y axis
       ctx.beginPath();
       ctx.moveTo(left, top);
       ctx.lineTo(left, H - bottom);
       ctx.stroke();
-      // X axis
       ctx.beginPath();
       ctx.moveTo(left, H - bottom);
       ctx.lineTo(W - right, H - bottom);
@@ -475,7 +379,6 @@
       ctx.fillStyle = '#374151';
       ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Arial';
 
-      // Y labels
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
       niceTicks(yMin, yMax, 5).ticks.forEach(tv => {
@@ -483,7 +386,6 @@
         ctx.fillText(tv.toFixed(2), left - 6, yy);
       });
 
-      // X labels: minutes 1..11
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       for (let m = 1; m <= 11; m++) {
@@ -491,7 +393,6 @@
         ctx.fillText(String(m), xx, H - bottom + 6);
       }
 
-      // Axis titles
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       ctx.fillText('Time (minutes)', (left + W - right) / 2, H - 4);
@@ -519,7 +420,6 @@
       ctx.restore();
     }
 
-    // Smooth line path with Catmull-Rom to Bezier
     function pathSmooth(points) {
       if (points.length < 2) return;
       ctx.beginPath();
@@ -541,16 +441,13 @@
     function drawSeries(scales) {
       const { x, y } = scales;
 
-      // Map eased global t to segment index using timeMap
       const te = easeInOut(state.t);
-      // Find segment i such that timeMap[i] <= te <= timeMap[i+1]
       let i = 0;
       while (i < timeMap.length - 1 && te > timeMap[i + 1]) i++;
       const t0 = timeMap[i];
       const t1 = timeMap[i + 1] ?? 1;
       const local = t1 > t0 ? (te - t0) / (t1 - t0) : 1;
 
-      // Build points up to i, and interpolate within current segment
       const pts = [];
       for (let k = 0; k <= i; k++) {
         pts.push({ x: x(minutes[k]), y: y(data[k]) });
@@ -561,7 +458,7 @@
         pts.push({ x: x(xm), y: y(v) });
       }
 
-      // Area fill
+      // Area
       ctx.save();
       ctx.fillStyle = 'rgba(37,99,235,0.08)';
       if (pts.length > 1) {
@@ -588,14 +485,11 @@
       ctx.fillStyle = '#fff';
       ctx.strokeStyle = 'rgba(37,99,235,0.9)';
       ctx.lineWidth = 2;
-      const drawPoint = (px, py, r=3.5) => {
+      for (let k = 0; k < Math.min(pts.length, data.length); k++) {
         ctx.beginPath();
-        ctx.arc(px, py, r, 0, Math.PI*2);
+        ctx.arc(pts[k].x, pts[k].y, 3.5, 0, Math.PI*2);
         ctx.fill();
         ctx.stroke();
-      };
-      for (let k = 0; k < Math.min(pts.length, data.length); k++) {
-        drawPoint(pts[k].x, pts[k].y, 3.5);
       }
       ctx.restore();
     }
@@ -607,7 +501,6 @@
       const px = x(minutes[idx]);
       const py = y(data[idx]);
 
-      // Vertical guide
       ctx.save();
       ctx.strokeStyle = 'rgba(17,24,39,0.25)';
       ctx.setLineDash([4, 4]);
@@ -617,7 +510,6 @@
       ctx.stroke();
       ctx.restore();
 
-      // Emphasize point
       ctx.save();
       ctx.fillStyle = '#fff';
       ctx.strokeStyle = '#111827';
@@ -636,10 +528,10 @@
       drawHover(scales);
     }
 
-    // Animation loop: auto-play on load
+    // Autoplay animation
     let raf = null;
     function animate() {
-      state.t = Math.min(1, state.t + 0.012); // base increment (frame-rate independent not strictly needed here)
+      state.t = Math.min(1, state.t + 0.012);
       draw();
       if (state.t < 1) {
         raf = requestAnimationFrame(animate);
@@ -674,7 +566,6 @@
 
     // Initial render + autoplay
     resizeCanvas();
-    // Small delay to ensure layout is stable before drawing/animating
     requestAnimationFrame(() => {
       state.t = 0;
       animate();
