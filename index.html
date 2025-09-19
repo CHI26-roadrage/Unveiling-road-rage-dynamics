@@ -1,575 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Unveiling Road Rage Dynamics</title>
+  <title>R³-Ftg Dataset</title>
   <style>
     :root {
       --maxw: 1200px;
       --fg: #333;
-      --bg: #f9f9f9;
+      --bg: #f9fafb;
       --muted: #6b7280;
       --primary: #2563eb;
-      --primary-20: rgba(37, 99, 235, 0.2);
-      --grid: #e5e7eb;
       --card: #ffffff;
-      --shadow: 0 4px 10px rgba(0,0,0,0.08);
+      --shadow: 0 4px 10px rgba(0,0,0,0.06);
       --radius: 12px;
-
-      --phase-safe: rgba(16, 185, 129, 0.10); /* 浅绿色 */
-      --phase-rage: rgba(239, 68, 68, 0.10);  /* 浅红色 */
+      --border: #e5e7eb;
+      --head: #f3f4f6;
+      --tag-bg: #eef2ff;
+      --tag-fg: #3730a3;
+      --tag-bd: #e0e7ff;
     }
 
     * { box-sizing: border-box; }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
       margin: 0;
-      padding: 20px;
-      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
       color: var(--fg);
+      background: var(--bg);
+      padding: 20px;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      max-width: var(--maxw);
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .back {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      font-size: 14px;
+    }
+
+    .intro {
+      max-width: var(--maxw);
+      margin: 0 auto 16px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      line-height: 1.8;
     }
 
     h1 {
-      text-align: center;
-      max-width: var(--maxw);
-      margin: 0 auto 28px;
-      line-height: 1.35;
-      font-size: clamp(1.4rem, 1rem + 2vw, 2rem);
+      font-size: clamp(1.2rem, 1rem + 1.6vw, 1.8rem);
+      margin: 0 0 8px;
     }
+    .muted { color: var(--muted); }
 
-    .container {
+    /* Controls */
+    .controls {
+      max-width: var(--maxw);
+      margin: 0 auto 12px;
       display: flex;
-      justify-content: space-between;
-      gap: 30px;
-      max-width: var(--maxw);
-      margin: 0 auto;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
     }
-
-    .image-box {
-      flex: 1;
-      text-align: center;
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 12px;
-    }
-
-    .image-box img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-    }
-
-    .image-box p {
-      margin-top: 10px;
-      font-weight: 600;
-      font-size: 1.05em;
-    }
-
-    .abstract, .dyn {
-      max-width: var(--maxw);
-      margin: 28px auto;
-      padding: 18px 20px;
-      line-height: 1.75;
-      font-size: 1.05em;
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .abstract h2, .dyn h2 {
-      margin: 0 0 10px;
-      font-size: 1.25em;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 0.95em;
-      margin-top: 6px;
-    }
-
-    /* chart */
-    .chart-wrap {
-      margin-top: 16px;
-      width: 100%;
-    }
-
-    .chart-card {
-      position: relative;
-      width: 100%;
+    .ctrl {
       background: #fff;
-      border-radius: 10px;
-      box-shadow: inset 0 1px 0 rgba(0,0,0,0.02);
-      overflow: hidden;
-      border: 1px solid #eef2f7;
-    }
-
-    canvas {
-      width: 100%;
-      height: 320px;
-      display: block;
-    }
-
-    .legend {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      box-shadow: var(--shadow);
+      font-size: 14px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 10px;
-      border: 1px dashed #e5e7eb;
-      border-radius: 8px;
-      background: #fafbff;
-      color: #374151;
-      font-size: 0.95rem;
-      margin-top: 8px;
     }
-    .legend-color {
-      width: 14px;
-      height: 14px;
-      background: var(--primary);
-      border-radius: 3px;
-      box-shadow: 0 0 0 3px var(--primary-20) inset;
-    }
-
-    .tip {
-      position: absolute;
-      pointer-events: none;
-      background: #111827;
-      color: #fff;
-      font-size: 12px;
-      padding: 6px 8px;
+    select, input[type="text"] {
+      border: 1px solid var(--border);
       border-radius: 6px;
-      transform: translate(-50%, -120%);
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity .15s ease;
-      z-index: 10;
-    }
-    .tip::after {
-      content: "";
-      position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: #111827;
+      padding: 6px 8px;
+      background: #fff;
+      font-size: 14px;
+      min-width: 140px;
     }
 
-    @media (max-width: 900px) {
-      .container {
-        flex-direction: column;
-      }
+    /* table-like grid */
+    .grid {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .grid-head, .grid-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 180px; /* 图片 / physical conditions / 类别 */
+      gap: 0;
+      align-items: center;
+    }
+    .grid-head {
+      background: var(--head);
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 1px solid var(--border);
+    }
+    .cell {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .cell.img { padding: 6px; }
+    .thumb {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      color: var(--tag-fg);
+      font-weight: 600;
+      font-size: 12px;
+      border: 1px solid var(--tag-bd);
     }
 
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 1.35rem;
+    /* Responsive */
+    @media (max-width: 820px) {
+      .grid-head, .grid-row {
+        grid-template-columns: 120px 1fr 140px;
       }
-      .abstract, .dyn {
-        font-size: 1rem;
-        padding: 16px;
+      .thumb { height: 86px; }
+    }
+    @media (max-width: 560px) {
+      .grid-head { display: none; }
+      .grid-row {
+        grid-template-columns: 120px 1fr;
+        grid-auto-rows: auto;
       }
-      canvas {
-        height: 260px;
-      }
+      .cell.cat { grid-column: 1 / -1; border-top: 0; }
+      .thumb { height: 90px; }
     }
   </style>
 </head>
 <body>
+  <header>
+    <a class="back" href="index.html">← 返回主页</a>
+  </header>
 
-  <!-- 标题 -->
-  <h1>Unveiling Road Rage Dynamics: Recreating and Modeling Road Rage in Audiovisual and Simulating Environments Based on Real-World Footage</h1>
-
-  <!-- 图片区域：左GIF右图 -->
-  <div class="container">
-    <div class="image-box">
-      <img src="IMG_0974.GIF" alt="R³-Ftg Dataset">
-      <p>R<sup>3</sup>-Ftg Dataset</p>
-    </div>
-    <div class="image-box">
-      <img src="IMG_Scene.png" alt="Self Report / EEG Response">
-      <p>Self Report / EEG Response</p>
-    </div>
-  </div>
-
-  <!-- 摘要 -->
-  <div class="abstract">
-    <h2>Abstract</h2>
+  <section class="intro">
+    <h1>R<sup>3</sup>-Ftg 数据集</h1>
     <p>
-      Road rage poses great risks to road safety. Digital interventions show promising potential in regulating rage-related maladaptive behaviors to mitigate such risks. This requires a clear understanding of road rage dynamics. Unlike prior work using artificial scenarios, we build the first-of-its-kind Real Road Rage Footage (R<sup>3</sup>-Ftg) dataset and recreate some of its most risky and anger-inducing scenes in both audiovisual and simulating environments. Then we recruit 60 participants to experience those scenes and record their rage in subjective and objective measures. We find: (1) Road rage has been successfully induced, and simulation provides more realistic experiences. (2) Slow-rise-fast-decay phenomena are observed in both stimuli, suggesting a spring-like process of road rage. (3) This process can be modeled using second-order damped oscillation distributions. To our knowledge, we are the first to model road rage dynamics in authentic scenarios recreated from real-world events, enabling a paradigm shift from learning-based to model-based digital solutions.
+      这里是 R<sup>3</sup>-Ftg 是数据集的介绍，由于本文正在审阅阶段，我们不方便透露我们的信息以及数据集更多细节。
+      如果您需要我们的数据集，请发文到 <strong>XXXXX</strong> 并提供您的信息，我们经过评审后会回复您。
     </p>
-  </div>
+    <p class="muted">下表展示 81 个视频的示例封面图（左列），包含固定的 physical conditions 与自动推断的类别标签。</p>
+  </section>
 
-  <!-- 动态曲线 -->
-  <div class="dyn">
-    <h2>Dynamics: Anger Rise and Dissipation</h2>
-    <div class="muted">X-axis: Time (minutes, 1 → 11) • Y-axis: Anger value • 11 sampled points</div>
-
-    <div class="chart-wrap">
-      <div class="chart-card">
-        <canvas id="rageChart"></canvas>
-        <div id="tooltip" class="tip"></div>
-      </div>
-      <div class="legend"><span class="legend-color"></span> Rage dynamics (slow rise, fast decay)</div>
+  <!-- 可选筛选/搜索 -->
+  <div class="controls">
+    <div class="ctrl">
+      <label for="condFilter">Physical conditions:</label>
+      <select id="condFilter">
+        <option value="all">All</option>
+        <option value="sunny">sunny</option>
+        <option value="cloudy">cloudy</option>
+        <option value="overcast">overcast</option>
+        <option value="night">night</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <label for="catFilter">类别:</label>
+      <select id="catFilter">
+        <option value="all">全部</option>
+        <option value="provocation">挑衅驾驶（0p）</option>
+        <option value="danger">危险驾驶（1p）</option>
+        <option value="obstruction">阻碍驾驶（2p）</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <label for="search">搜索文件名:</label>
+      <input id="search" type="text" placeholder="输入文件名关键字"/>
     </div>
   </div>
+
+  <!-- 表格 -->
+  <section class="grid" id="grid">
+    <div class="grid-head">
+      <div class="cell">样例图像</div>
+      <div class="cell">Physical conditions</div>
+      <div class="cell">类别</div>
+    </div>
+    <!-- 行内容由 JS 生成 -->
+  </section>
 
   <script>
-    // Data: 11 points at minutes 1..11
-    const data = [
-      0.111, 0.111, 0.333333333, 1.222222222, 2.277777778,
-      2.5, 2.555555556, 2.222222222, 0.111111111, 0.055555556, 0.055555556
+    // 依据更正后的命名规则自动生成 81 条路径
+    // 0p: 0.jpg - 23.jpg
+    const zeroP = Array.from({length: 24}, (_, i) => `0p/${i}.jpg`);
+    // 1p: 0.jpg - 49.jpg
+    const oneP = Array.from({length: 50}, (_, i) => `1p/${i}.jpg`);
+    // 2p: 0.jpg - 6.jpg
+    const twoP = Array.from({length: 7}, (_, i) => `2p/${i}.jpg`);
+
+    // 合并为 81 项，顺序为 0p -> 1p -> 2p
+    const items = [...zeroP, ...oneP, ...twoP];
+
+    // 为每一条固定 physical conditions（长度需与 items 完全一致）
+    // 示例分配方案（可按你需要直接修改此数组）：
+    // - 0p（24）: 前6 sunny，后6 cloudy，再6 overcast，最后6 night
+    // - 1p（50）: 以10为一组轮换 sunny, cloudy, overcast, night, sunny
+    // - 2p（7）: 依次 sunny, cloudy, overcast, night, sunny, cloudy, overcast
+    const conditions = [
+      // 0p (24)
+      ...Array(6).fill('sunny'), ...Array(6).fill('cloudy'),
+      ...Array(6).fill('overcast'), ...Array(6).fill('night'),
+      // 1p (50)
+      ...Array(10).fill('sunny'), ...Array(10).fill('cloudy'),
+      ...Array(10).fill('overcast'), ...Array(10).fill('night'),
+      ...Array(10).fill('sunny'),
+      // 2p (7)
+      'sunny','cloudy','overcast','night','sunny','cloudy','overcast'
     ];
-    const minutes = Array.from({length: 11}, (_, i) => i + 1);
 
-    // Canvas setup with devicePixelRatio for crisp lines
-    const canvas = document.getElementById('rageChart');
-    const tip = document.getElementById('tooltip');
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      const cssWidth = canvas.clientWidth;
-      const cssHeight = canvas.clientHeight;
-      canvas.width = Math.floor(cssWidth * dpr);
-      canvas.height = Math.floor(cssHeight * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw();
-    }
-    window.addEventListener('resize', resizeCanvas);
-
-    const state = {
-      padding: { top: 24, right: 18, bottom: 40, left: 50 },
-      t: 0,
-      hoverIdx: -1
-    };
-
-    // Build segment speed profile for slow-rise, fast-decay
-    function buildSegmentSpeeds(values) {
-      const speeds = [];
-      const vmax = Math.max(...values);
-      for (let i = 0; i < values.length - 1; i++) {
-        const dy = values[i + 1] - values[i];
-        let s = dy >= 0 ? 0.6 : 1.8; // rise slow, decay fast
-        s *= 0.8 + 0.2 * Math.min(3, Math.abs(dy) / Math.max(0.001, vmax));
-        speeds.push(s);
-      }
-      return speeds;
-    }
-    const segSpeeds = buildSegmentSpeeds(data);
-
-    function buildTimeMap(speeds) {
-      const weights = speeds.map(s => 1 / s); // slower => longer duration
-      const sum = weights.reduce((a, b) => a + b, 0);
-      const cum = [0];
-      let acc = 0;
-      for (let w of weights) {
-        acc += w / sum;
-        cum.push(acc);
-      }
-      cum[cum.length - 1] = 1;
-      return cum;
-    }
-    const timeMap = buildTimeMap(segSpeeds);
-
-    function easeInOut(t) {
-      return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+    if (conditions.length !== items.length) {
+      console.warn('conditions 数组长度与 items 不一致：', conditions.length, items.length);
     }
 
-    function getScales() {
-      const W = canvas.clientWidth;
-      const H = canvas.clientHeight;
-      const { left, right, top, bottom } = state.padding;
-      const iw = W - left - right;
-      const ih = H - top - bottom;
-
-      const xMin = 1, xMax = 11;
-      const x = (m) => left + (m - xMin) / (xMax - xMin) * iw;
-
-      const yMin = 0;
-      const yMax = Math.max(...data) * 1.1;
-      const y = (v) => top + (1 - (v - yMin) / (yMax - yMin)) * ih;
-
-      return { x, y, iw, ih, W, H, xMin, xMax, yMin, yMax };
+    function guessCategory(path) {
+      if (path.startsWith('0p/')) return { key: 'provocation', label: '挑衅驾驶（0p）' };
+      if (path.startsWith('1p/')) return { key: 'danger', label: '危险驾驶（1p）' };
+      if (path.startsWith('2p/')) return { key: 'obstruction', label: '阻碍驾驶（2p）' };
+      return { key: 'unknown', label: '未知' };
     }
 
-    function drawBackgroundPhases(scales) {
-      const { x } = scales;
-      const { top, bottom } = state.padding;
-      const H = canvas.clientHeight;
+    // 构建数据对象（使用固定 conditions，不再随机）
+    const data = items.map((path, idx) => ({
+      path,
+      file: path.split('/').pop(),
+      cond: conditions[idx] || 'sunny',
+      cat: guessCategory(path)
+    }));
 
-      ctx.save();
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
-      ctx.fillRect(x(1), top, x(3) - x(1), H - top - bottom);
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-rage').trim();
-      ctx.fillRect(x(3), top, x(8) - x(3), H - top - bottom);
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
-      ctx.fillRect(x(8), top, x(11) - x(8), H - top - bottom);
-      ctx.restore();
+    // 渲染
+    const grid = document.getElementById('grid');
+
+    function makeRow(item) {
+      const row = document.createElement('div');
+      row.className = 'grid-row';
+      row.innerHTML = `
+        <div class="cell img">
+          <img class="thumb" src="${item.path}" alt="${item.cat.label} 封面图 ${item.file}" onerror="this.style.opacity=0.3;this.alt='图片未找到';">
+        </div>
+        <div class="cell">${item.cond}</div>
+        <div class="cell cat"><span class="tag">${item.cat.label}</span></div>
+      `;
+      return row;
     }
 
-    function niceTicks(min, max, count) {
-      const span = max - min;
-      if (span <= 0) return { ticks: [min] };
-      const step0 = span / Math.max(1, count);
-      const mag = Math.pow(10, Math.floor(Math.log10(step0)));
-      const norm = step0 / mag;
-      let step;
-      if (norm < 1.5) step = 1 * mag;
-      else if (norm < 3) step = 2 * mag;
-      else if (norm < 7) step = 5 * mag;
-      else step = 10 * mag;
-      const niceMin = Math.ceil(min / step) * step;
-      const niceMax = Math.floor(max / step) * step;
-      const ticks = [];
-      for (let v = niceMin; v <= niceMax + 1e-9; v += step) ticks.push(Number(v.toFixed(10)));
-      return { ticks };
+    function render(list) {
+      // 清除旧行（保留表头）
+      grid.querySelectorAll('.grid-row').forEach(r => r.remove());
+      // 渲染
+      const frag = document.createDocumentFragment();
+      list.forEach(item => frag.appendChild(makeRow(item)));
+      grid.appendChild(frag);
     }
 
-    function drawAxesGrid(scales) {
-      const { x, y, W, H, xMin, xMax, yMin, yMax } = scales;
-      const { left, right, top, bottom } = state.padding;
+    // 过滤与搜索
+    const condFilter = document.getElementById('condFilter');
+    const catFilter = document.getElementById('catFilter');
+    const search = document.getElementById('search');
 
-      ctx.clearRect(0, 0, W, H);
+    function applyFilters() {
+      const condVal = condFilter.value;
+      const catVal = catFilter.value;
+      const keyword = search.value.trim().toLowerCase();
 
-      // Phases
-      drawBackgroundPhases(scales);
-
-      // Grid
-      ctx.save();
-      ctx.strokeStyle = '#e5e7eb';
-      ctx.lineWidth = 1;
-
-      const yt = niceTicks(yMin, yMax, 5).ticks;
-      yt.forEach(tv => {
-        const yy = y(tv);
-        ctx.beginPath();
-        ctx.moveTo(left, yy);
-        ctx.lineTo(W - right, yy);
-        ctx.stroke();
+      const filtered = data.filter(d => {
+        const okCond = condVal === 'all' || d.cond === condVal;
+        const okCat = catVal === 'all' || d.cat.key === catVal;
+        const okKw = !keyword || d.file.toLowerCase().includes(keyword);
+        return okCond && okCat && okKw;
       });
 
-      for (let m = 1; m <= 11; m++) {
-        const xx = x(m);
-        ctx.beginPath();
-        ctx.moveTo(xx, top);
-        ctx.lineTo(xx, H - bottom);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Axes
-      ctx.save();
-      ctx.strokeStyle = '#9ca3af';
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(left, top);
-      ctx.lineTo(left, H - bottom);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(left, H - bottom);
-      ctx.lineTo(W - right, H - bottom);
-      ctx.stroke();
-      ctx.restore();
-
-      // Labels
-      ctx.save();
-      ctx.fillStyle = '#374151';
-      ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Arial';
-
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'middle';
-      niceTicks(yMin, yMax, 5).ticks.forEach(tv => {
-        const yy = y(tv);
-        ctx.fillText(tv.toFixed(2), left - 6, yy);
-      });
-
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      for (let m = 1; m <= 11; m++) {
-        const xx = x(m);
-        ctx.fillText(String(m), xx, H - bottom + 6);
-      }
-
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText('Time (minutes)', (left + W - right) / 2, H - 4);
-
-      ctx.save();
-      ctx.translate(14, (top + H - bottom) / 2);
-      ctx.rotate(-Math.PI / 2);
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.fillText('Anger value', 0, 0);
-      ctx.restore();
-      ctx.restore();
-
-      // Phase captions
-      ctx.save();
-      ctx.fillStyle = '#065f46';
-      ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Arial';
-      const yCap = top + 8;
-      ctx.textAlign = 'left';
-      ctx.fillText('Neutral (Route 1)', x(1) + 6, yCap);
-      ctx.fillStyle = '#7f1d1d';
-      ctx.fillText('Rage scenes (Route 2)', x(3) + 6, yCap);
-      ctx.fillStyle = '#065f46';
-      ctx.fillText('Neutral (Route 3)', x(8) + 6, yCap);
-      ctx.restore();
+      render(filtered);
     }
 
-    function pathSmooth(points) {
-      if (points.length < 2) return;
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 0; i < points.length - 1; i++) {
-        const p0 = points[i - 1] || points[i];
-        const p1 = points[i];
-        const p2 = points[i + 1];
-        const p3 = points[i + 2] || p2;
-        const t = 0.5;
-        const cp1x = p1.x + (p2.x - p0.x) * t / 6;
-        const cp1y = p1.y + (p2.y - p0.y) * t / 6;
-        const cp2x = p2.x - (p3.x - p1.x) * t / 6;
-        const cp2y = p2.y - (p3.y - p1.y) * t / 6;
-        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
-      }
-    }
+    condFilter.addEventListener('change', applyFilters);
+    catFilter.addEventListener('change', applyFilters);
+    search.addEventListener('input', applyFilters);
 
-    function drawSeries(scales) {
-      const { x, y } = scales;
-
-      const te = easeInOut(state.t);
-      let i = 0;
-      while (i < timeMap.length - 1 && te > timeMap[i + 1]) i++;
-      const t0 = timeMap[i];
-      const t1 = timeMap[i + 1] ?? 1;
-      const local = t1 > t0 ? (te - t0) / (t1 - t0) : 1;
-
-      const pts = [];
-      for (let k = 0; k <= i; k++) {
-        pts.push({ x: x(minutes[k]), y: y(data[k]) });
-      }
-      if (i < data.length - 1) {
-        const v = data[i] + (data[i + 1] - data[i]) * local;
-        const xm = minutes[i] + (minutes[i + 1] - minutes[i]) * local;
-        pts.push({ x: x(xm), y: y(v) });
-      }
-
-      // Area
-      ctx.save();
-      ctx.fillStyle = 'rgba(37,99,235,0.08)';
-      if (pts.length > 1) {
-        pathSmooth(pts);
-        ctx.lineTo(pts[pts.length - 1].x, y(0));
-        ctx.lineTo(pts[0].x, y(0));
-        ctx.closePath();
-        ctx.fill();
-      }
-      ctx.restore();
-
-      // Line
-      ctx.save();
-      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#2563eb';
-      ctx.lineWidth = 2;
-      if (pts.length > 1) {
-        pathSmooth(pts);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Points
-      ctx.save();
-      ctx.fillStyle = '#fff';
-      ctx.strokeStyle = 'rgba(37,99,235,0.9)';
-      ctx.lineWidth = 2;
-      for (let k = 0; k < Math.min(pts.length, data.length); k++) {
-        ctx.beginPath();
-        ctx.arc(pts[k].x, pts[k].y, 3.5, 0, Math.PI*2);
-        ctx.fill();
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    function drawHover(scales) {
-      if (state.hoverIdx < 0) return;
-      const { x, y } = scales;
-      const idx = state.hoverIdx;
-      const px = x(minutes[idx]);
-      const py = y(data[idx]);
-
-      ctx.save();
-      ctx.strokeStyle = 'rgba(17,24,39,0.25)';
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(px, state.padding.top);
-      ctx.lineTo(px, canvas.clientHeight - state.padding.bottom);
-      ctx.stroke();
-      ctx.restore();
-
-      ctx.save();
-      ctx.fillStyle = '#fff';
-      ctx.strokeStyle = '#111827';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(px, py, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    function draw() {
-      const scales = getScales();
-      drawAxesGrid(scales);
-      drawSeries(scales);
-      drawHover(scales);
-    }
-
-    // Autoplay animation
-    let raf = null;
-    function animate() {
-      state.t = Math.min(1, state.t + 0.012);
-      draw();
-      if (state.t < 1) {
-        raf = requestAnimationFrame(animate);
-      }
-    }
-
-    // Hover tooltip
-    canvas.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const xCss = e.clientX - rect.left;
-      const scales = getScales();
-      const step = (scales.W - state.padding.left - state.padding.right) / (minutes.length - 1);
-      const idx = Math.round((xCss - state.padding.left) / step);
-      if (idx >= 0 && idx < data.length) {
-        state.hoverIdx = idx;
-        tip.style.opacity = 1;
-        tip.style.left = `${Math.max(state.padding.left, Math.min(xCss, canvas.clientWidth - state.padding.right))}px`;
-        tip.style.top = `${Math.max(10, Math.min(scales.y(data[idx]), canvas.clientHeight - 30))}px`;
-        tip.textContent = `t=${minutes[idx]} min • anger=${data[idx].toFixed(3)}`;
-      } else {
-        state.hoverIdx = -1;
-        tip.style.opacity = 0;
-      }
-      draw();
-    });
-
-    canvas.addEventListener('mouseleave', () => {
-      state.hoverIdx = -1;
-      tip.style.opacity = 0;
-      draw();
-    });
-
-    // Initial render + autoplay
-    resizeCanvas();
-    requestAnimationFrame(() => {
-      state.t = 0;
-      animate();
-    });
+    // 初次渲染
+    render(data);
   </script>
 </body>
 </html>

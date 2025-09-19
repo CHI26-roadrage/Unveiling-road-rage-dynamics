@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>R³-Ftg Dataset</title>
+  <style>
+    :root {
+      --maxw: 1200px;
+      --fg: #333;
+      --bg: #f9fafb;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --card: #ffffff;
+      --shadow: 0 4px 10px rgba(0,0,0,0.06);
+      --radius: 12px;
+      --border: #e5e7eb;
+      --head: #f3f4f6;
+      --tag-bg: #eef2ff;
+      --tag-fg: #3730a3;
+      --tag-bd: #e0e7ff;
+      --check: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      padding: 20px;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      max-width: var(--maxw);
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .back {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      font-size: 14px;
+    }
+
+    .intro {
+      max-width: var(--maxw);
+      margin: 0 auto 16px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      line-height: 1.75;
+    }
+
+    h1 {
+      font-size: clamp(1.2rem, 1rem + 1.6vw, 1.8rem);
+      margin: 0 0 6px;
+    }
+    .muted { color: var(--muted); }
+
+    .defs {
+      margin-top: 8px;
+      padding-left: 18px;
+    }
+    .defs li { margin: 6px 0; }
+
+    .controls {
+      max-width: var(--maxw);
+      margin: 0 auto 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .ctrl {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      box-shadow: var(--shadow);
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    select {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      background: #fff;
+      font-size: 14px;
+      min-width: 140px;
+    }
+
+    .grid {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: auto;
+    }
+    .grid-head, .grid-row {
+      display: grid;
+      grid-template-columns: 160px 140px 100px 100px repeat(9, 90px);
+      gap: 0;
+      align-items: center;
+      min-width: 1200px;
+    }
+    .grid-head {
+      background: var(--head);
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .cell {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cell.img { padding: 6px; }
+    .thumb {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .tag {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      color: var(--tag-fg);
+      font-weight: 600;
+      font-size: 12px;
+      border: 1px solid var(--tag-bd);
+    }
+    .check {
+      color: var(--check);
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .empty {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    @media (max-width: 820px) {
+      .grid-head, .grid-row {
+        grid-template-columns: 140px 120px 90px 90px repeat(9, 80px);
+      }
+      .thumb { height: 80px; }
+    }
+    @media (max-width: 560px) {
+      .thumb { height: 74px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="index.html">← Back to Home</a>
+  </header>
+
+  <section class="intro">
+    <h1>R<sup>3</sup>-Ftg Dataset</h1>
+    <p>
+      This page presents the R<sup>3</sup>-Ftg dataset. Since the paper is under review, we cannot disclose our identity or additional details now. If you need access, please email <strong>chi26submission.roadrage@gmail.com</strong> with your information; we will respond after an internal review.
+    </p>
+    <p class="muted">Columns 1–9 denote the following situations (listed here due to their long descriptions):</p>
+    <ol class="defs">
+      <li>Vehicles from adjacent lanes cut into our lane with insufficient gap.</li>
+      <li>Vehicles from adjacent lanes merge into our lane without using turn signals.</li>
+      <li>Vehicles from adjacent lanes make illegal lane changes across solid lines into our lane.</li>
+      <li>A vehicle from behind overtakes and merges into our lane with an unsafe following distance.</li>
+      <li>The vehicle ahead brakes suddenly at a close distance.</li>
+      <li>Pedestrians or riders (bicycles/e-bikes/tricycles) cross into our path, causing a near-collision risk.</li>
+      <li>A vehicle ahead repeatedly brakes to box in or force a stop.</li>
+      <li>A vehicle repeatedly cuts in front of us, impeding our progress.</li>
+      <li>The lane is congested with high traffic density (>5 vehicles).</li>
+    </ol>
+  </section>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label for="condFilter">Physical conditions:</label>
+      <select id="condFilter">
+        <option value="all">All</option>
+        <option value="sunny">sunny</option>
+        <option value="cloudy">cloudy</option>
+        <option value="overcast">overcast</option>
+        <option value="night">night</option>
+        <option value="dusk">dusk</option>
+        <option value="tunnel">tunnel</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <label for="catFilter">Category:</label>
+      <select id="catFilter">
+        <option value="all">All</option>
+        <option value="provocation">Provocative driving (0p)</option>
+        <option value="danger">Dangerous driving (1p)</option>
+        <option value="obstruction">Obstructive driving (2p)</option>
+      </select>
+    </div>
+  </div>
+
+  <section class="grid" id="grid">
+    <div class="grid-head" id="gridHead"></div>
+  </section>
+
+  <script>
+    // Build ordered image list (81 items)
+    const zeroP = Array.from({length: 24}, (_, i) => `0p/${i}.jpg`);
+    const oneP  = Array.from({length: 50}, (_, i) => `1p/${i}.jpg`);
+    const twoP  = Array.from({length: 7},  (_, i) => `2p/${i}.jpg`);
+    const imagePaths = [...zeroP, ...oneP, ...twoP];
+
+    function guessCategoryByIndex(idx) {
+      if (idx < zeroP.length) return { key: 'provocation', label: 'Provocative driving (0p)' };
+      if (idx < zeroP.length + oneP.length) return { key: 'danger', label: 'Dangerous driving (1p)' };
+      return { key: 'obstruction', label: 'Obstructive driving (2p)' };
+    }
+
+    // Inline data: header + 81 rows (from your message, in order)
+    // Empty cells kept as ''.
+    const sheetMatrix = [
+      ['physical_conditions','begin(s)','end(s)','1','2','3','4','5','6','7','8','9'],
+      ['tunnel',20,38,1,1,'','','','','',1,'',''],
+      ['overcast',9,34,1,1,'','','','','','','1',''],
+      ['dusk',10,27,1,1,'','',1,'',1,1,'',''],
+      ['cloudy',15,41,1,1,'','',1,'',1,'',''],
+      ['sunny',21,43,'',1,'','','','','',1,1,''],
+      ['cloudy',20,44,1,1,'',1,1,'',1,1,'',''],
+      ['night',25,42,1,1,'','','','','','','1',''],
+      ['sunny',38,57,'',1,'','',1,'',1,'',''],
+      ['cloudy',31,48,1,'','',1,'','',1,'',1],
+      ['night',62,79,'','','','','','','','','1',''],
+      ['sunny',69,89,1,'',1,1,1,'',1,'',''],
+      ['sunny',205,241,'','','','',1,'',1,1,''],
+      ['night',0,21,1,1,'',1,1,'',1,1,1,''],
+      ['cloudy',242,263,1,'','',1,1,'',1,'',''],
+      ['overcast',266,290,'','','','','','','',1,1,''],
+      ['cloudy',322,346,'','','','',1,'',1,1,''],
+      ['night',1,14,'',1,'',1,'',1,'','',''],
+      ['overcast',0,17,1,'','',1,1,'',1,'',1],
+      ['overcast',1,13,'','','','',1,'',1,'',1],
+      ['overcast',2,19,1,1,'','','','','',1,1,''],
+      ['night',2,22,1,1,'','',1,'',1,1,1,''],
+      ['night',5,25,1,'','',1,1,'',1,'',''],
+      ['overcast',8,28,1,1,'',1,'','','','',1,''],
+      ['tunnel',4,27,'',1,'',1,'','','',1,1],
+      ['cloudy',0,11,1,'','',1,'','','','',''],
+      ['sunny',0,16,1,1,'','','','','','','',''],
+      ['overcast',0,15,1,'',1,1,1,'','','','',1],
+      ['cloudy',3,15,1,1,1,'','','','','','',1],
+      ['overcast',5,17,1,'','',1,'','','','',''],
+      ['sunny',4,16,1,1,'','','','','','','',1],
+      ['sunny',5,21,1,1,1,'','','','','','',1],
+      ['sunny',16,30,1,'','','',1,'','','','',''],
+      ['night',5,17,1,1,'','','','','','','',1],
+      ['overcast',19,31,1,'','','','','','','','',''],
+      ['sunny',14,27,1,1,1,'','','','','','',''],
+      ['sunny',42,59,1,'','',1,1,'','','','',''],
+      ['sunny',0,8,1,1,1,'','','','','','',''],
+      ['overcast',80,94,1,'','',1,'','','','',''],
+      ['overcast',1,13,1,1,'','',1,'','','','',1],
+      ['overcast',0,11,1,'','',1,1,'','','','',''],
+      ['sunny',4,14,1,'',1,'','','','','','',''],
+      ['night',7,20,1,1,1,'','','','','','',1],
+      ['sunny',5,17,1,'',1,'',1,'','','','',''],
+      ['night',11,25,'',1,'',1,'','','','','',''],
+      ['sunny',13,27,'','','','','',1,'','','',1],
+      ['sunny',0,10,'','','','','',1,'','','',''],
+      ['dusk',5,17,'','','','','',1,'','','',''],
+      ['night',1,13,1,1,'','','','','','','',''],
+      ['night',23,39,'','','','','',1,'','','',''],
+      ['cloudy',0,11,'','','','','',1,'','','',''],
+      ['sunny',54,73,'','','','','',1,'','','',''],
+      ['sunny',3,15,'','','','','',1,'','','',1],
+      ['sunny',0,11,'','','','','',1,'','','',''],
+      ['tunnel',6,15,'','','','','',1,'','','',''],
+      ['sunny',0,12,'','','','','','',1,'','',''],
+      ['overcast',0,11,'','','','','','',1,'','',''],
+      ['sunny',0,11,'','','','','','',1,'','',''],
+      ['cloudy',0,12,'','','','','','',1,'','',''],
+      ['cloudy',0,11,1,1,1,'',1,'','', '','',1],
+      ['sunny',0,10,'','','','','','',1,'','',''],
+      ['sunny',5,17,'','','','','','',1,'','',1],
+      ['sunny',0,11,'','','','','','',1,'','',''],
+      ['sunny',6,19,'','','','','','',1,'','',''],
+      ['overcast',0,14,'','','','','','',1,'','',1],
+      ['overcast',0,11,'','','','','','',1,'','',1],
+      ['sunny',0,11,'','','','','','',1,'','',1],
+      ['sunny',2,17,1,'',1,'','','','','','',''],
+      ['sunny',0,21,1,'','','',1,'','','','',1],
+      ['night',9,21,1,'','',1,1,'','','','',1],
+      ['sunny',1,13,1,1,'','','','','','','',1],
+      ['sunny',0,14,1,'','',1,'','','','',''],
+      ['overcast',1,16,1,1,'','','','','','','',1],
+      ['sunny',3,15,1,1,'','','','','','','',''],
+      ['night',5,19,1,1,'','','','','','','',''],
+      ['overcast',0,20,'','','','','',1,'','','',1],
+      ['sunny',0,22,'','','','','',1,'','','',1],
+      ['sunny',0,19,'','','','','','','','','','',1],
+      ['sunny',0,15,'','','','','',1,'','','',1],
+      ['sunny',6,27,'','','','','',1,'','','',1],
+      ['overcast',0,20,'','','','','',1,'','','',1],
+      ['overcast',0,20,'','','','','','','','','','',1],
+    ];
+
+    // Build header
+    const grid = document.getElementById('grid');
+    const head = document.getElementById('gridHead');
+    const headers = sheetMatrix[0].map(String);
+    const headerCells = ['Image', ...headers];
+    for (const label of headerCells) {
+      const div = document.createElement('div');
+      div.className = 'cell';
+      div.textContent = label;
+      head.appendChild(div);
+    }
+
+    const dataRows = sheetMatrix.slice(1);
+
+    const idxPhysical = headers.indexOf('physical_conditions');
+    const idxBegin = headers.indexOf('begin(s)');
+    const idxEnd = headers.indexOf('end(s)');
+    const idxSituations = Array.from({length: 9}, (_, i) => headers.indexOf(String(i+1)));
+
+    const condFilter = document.getElementById('condFilter');
+    const catFilter = document.getElementById('catFilter');
+
+    function makeRow(rowArr, rowIdx) {
+      const el = document.createElement('div');
+      el.className = 'grid-row';
+
+      const imgPath = imagePaths[rowIdx] || '';
+      const cat = guessCategoryByIndex(rowIdx);
+
+      const physical = String(rowArr[idxPhysical] ?? '').toLowerCase();
+      el.dataset.cat = cat.key;
+      el.dataset.physical = physical;
+
+      const imgCell = document.createElement('div');
+      imgCell.className = 'cell img';
+      imgCell.innerHTML = `
+        <img class="thumb" src="${imgPath}" alt="${cat.label} cover ${imgPath.split('/').pop()}" onerror="this.style.opacity=0.3;this.alt='image not found';">
+        <div class="tag">${cat.label}</div>
+      `;
+      el.appendChild(imgCell);
+
+      const cellPhysical = document.createElement('div');
+      cellPhysical.className = 'cell';
+      cellPhysical.textContent = String(rowArr[idxPhysical] ?? '');
+      el.appendChild(cellPhysical);
+
+      const cellBegin = document.createElement('div');
+      cellBegin.className = 'cell';
+      cellBegin.textContent = String(rowArr[idxBegin] ?? '');
+      el.appendChild(cellBegin);
+
+      const cellEnd = document.createElement('div');
+      cellEnd.className = 'cell';
+      cellEnd.textContent = String(rowArr[idxEnd] ?? '');
+      el.appendChild(cellEnd);
+
+      for (let k = 0; k < 9; k++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const v = String(rowArr[idxSituations[k]] ?? '').trim();
+        if (v === '1' || Number(v) === 1) {
+          cell.innerHTML = `<span class="check">√</span>`;
+        } else {
+          cell.innerHTML = `<span class="empty">—</span>`;
+        }
+        el.appendChild(cell);
+      }
+
+      return el;
+    }
+
+    function render() {
+      document.querySelectorAll('.grid-row').forEach(r => r.remove());
+
+      const condVal = condFilter.value.toLowerCase();
+      const catVal = catFilter.value;
+
+      const rows = dataRows.map((r, i) => ({ arr: r, idx: i }))
+        .filter(({arr, idx}) => {
+          const physical = String(arr[idxPhysical] ?? '').toLowerCase();
+          const okCond = condVal === 'all' || physical === condVal;
+          const catObj = guessCategoryByIndex(idx);
+          const okCat = catVal === 'all' || catObj.key === catVal;
+          return okCond && okCat;
+        });
+
+      const frag = document.createDocumentFragment();
+      rows.forEach(({arr, idx}) => frag.appendChild(makeRow(arr, idx)));
+      grid.appendChild(frag);
+    }
+
+    condFilter.addEventListener('change', render);
+    catFilter.addEventListener('change', render);
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
