@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Self Report / EEG Response — Results</title>
+  <style>
+    :root{
+      --maxw: 1200px;
+      --fg:#333; --bg:#f8fafc; --muted:#6b7280;
+      --card:#fff; --border:#e5e7eb; --shadow:0 6px 18px rgba(0,0,0,.06);
+      --head:#f3f4f6; --primary:#2563eb; --accent:#7c3aed;
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;color:var(--fg);background:var(--bg);padding:20px}
+    a{color:var(--primary);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    header{max-width:var(--maxw);margin:0 auto 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .back{border:1px solid var(--border);background:#fff;padding:8px 12px;border-radius:10px;box-shadow:var(--shadow);font-size:14px}
+
+    .intro{max-width:var(--maxw);margin:0 auto 16px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;line-height:1.75}
+    h1{margin:0 0 8px;font-size:clamp(1.2rem,1rem + 1.6vw,1.8rem)}
+    .muted{color:var(--muted)}
+    .note{margin-top:8px;padding:8px 10px;border:1px dashed var(--border);border-radius:10px;background:#fff}
+
+    .section{max-width:var(--maxw);margin:16px auto;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .section h2{margin:0;padding:12px 14px;background:var(--head);border-bottom:1px solid var(--border);font-size:18px}
+    .grid{width:100%;display:grid;grid-template-columns:240px 1fr 260px}
+    .row,.head{display:contents}
+    .cell{padding:12px;border-bottom:1px solid var(--border);font-size:14px}
+    .head .cell{font-weight:600;background:#fafafa;border-bottom:1px solid var(--border)}
+    .thumb{width:100%;height:140px;object-fit:cover;border:1px solid var(--border);border-radius:10px;background:#f9fafb;cursor:pointer}
+    .eeg-thumb{width:100%;height:140px;object-fit:contain;border:1px solid var(--border);border-radius:10px;background:#fff;cursor:pointer}
+    .name{font-weight:600;margin:6px 0 0;color:#111}
+    .dots{grid-column:1/-1;text-align:center;color:#9ca3af;font-style:italic}
+
+    /* sparkline chart */
+    .sr-wrap{display:flex;flex-direction:column;gap:8px}
+    .sr-line{height:140px;background:#fff;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative}
+    canvas{width:100%;height:100%}
+    .sr-legend{font-size:12px;color:#6b7280}
+    .sr-tip{position:absolute;pointer-events:none;background:#111;color:#fff;font-size:12px;padding:3px 6px;border-radius:6px;transform:translate(-50%,-120%);display:none;white-space:nowrap}
+
+    /* lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+    .lightbox img{max-width:92vw;max-height:86vh;border-radius:10px;background:#fff}
+    .lightbox.show{display:flex}
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .cell{border-bottom:1px solid var(--border);border-right:none}
+      .cell + .cell{border-top:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="index.html">← Back to Home</a>
+    <span class="muted">Section: Self Report / EEG Response</span>
+  </header>
+
+  <section class="intro">
+    <h1>Experimental Results Overview</h1>
+    <p>
+      This page summarizes the experimental results, which include three components: (1) facial video signals, (2) self-reports, and (3) EEG signals. The self-report is a 5-point Likert scale sampled per minute. Since the paper is under review and to protect participant privacy, we cannot disclose our identity or share more detailed data at this time. If you need access, please email <strong>chi26submission.roadrage@gmail.com</strong>; we will reply after an internal review.
+    </p>
+    <p class="note">
+      The following are sample records for demonstration only, not the full dataset. The full dataset consists of facial videos + self-reports + raw EEG + processed EEG.
+    </p>
+  </section>
+
+  <!-- Video Group -->
+  <section class="section" id="videoGroup">
+    <h2>Experiment A — Video Group</h2>
+    <div class="grid">
+      <div class="head">
+        <div class="cell">Face video signal</div>
+        <div class="cell">Self-report (minute 1–11, 5-point Likert)</div>
+        <div class="cell">EEG exemplar image</div>
+      </div>
+
+      <!-- Rows injected by JS -->
+    </div>
+    <div class="cell dots">...</div>
+  </section>
+
+  <!-- Simulator Group -->
+  <section class="section" id="simGroup">
+    <h2>Experiment B — Simulator Group</h2>
+    <div class="grid">
+      <div class="head">
+        <div class="cell">Face video signal</div>
+        <div class="cell">Self-report (minute 1–11, 5-point Likert)</div>
+        <div class="cell">EEG exemplar image</div>
+      </div>
+
+      <!-- Rows injected by JS -->
+    </div>
+    <div class="cell dots">...</div>
+  </section>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
+    <img id="lightboxImg" alt="preview"/>
+  </div>
+
+  <script>
+    // Data configuration
+    // Update file names here if your actual images differ.
+    const data = {
+      videoGroup: [
+        {
+          name: 'Participant A1',
+          faceImg: 'report/Ap/4.jpg',
+          selfReport: [0,0,2,1,1,2,3,3,0,0,0],
+          eegImg: 'report/eeg_outputs/bands/AF3_bands.png'
+        },
+        {
+          name: 'Participant A2',
+          faceImg: 'report/Ap/5.jpg',
+          selfReport: [0,0,0,1,2,3,3,2,1,1,0],
+          eegImg: 'report/eeg_outputs/bands/AF4_bands.png'
+        },
+        {
+          name: 'Participant A3',
+          faceImg: 'report/Ap/8.jpg',
+          selfReport: [0,0,0,1,1,3,4,2,0,0,0],
+          eegImg: 'report/eeg_outputs/bands/F3_bands.png'
+        },
+      ],
+      simGroup: [
+        {
+          name: 'Participant B1',
+          faceImg: 'report/Bp/28.jpg',
+          selfReport: [0,0,1,0,1,3,2,1,0,0,0],
+          eegImg: 'report/eeg_outputs_simulator/bands/AF3_bands.png'
+        },
+        {
+          name: 'Participant B2',
+          faceImg: 'report/Bp/29.jpg',
+          selfReport: [0,0,1,1,3,4,3,1,0,0,0],
+          eegImg: 'report/eeg_outputs_simulator/bands/AF4_bands.png'
+        },
+        {
+          name: 'Participant B3',
+          faceImg: 'report/Bp/30.jpg',
+          selfReport: [0,0,0,1,1,1,2,1,0,0,0],
+          eegImg: 'report/eeg_outputs_simulator/bands/F3_bands.png'
+        },
+      ]
+    };
+
+    // Rendering helpers
+    function rowFaceCell(p){
+      const wrap = document.createElement('div');
+      wrap.className = 'cell';
+      wrap.innerHTML = `
+        <img class="thumb" src="${p.faceImg}" alt="${p.name} face video thumbnail" onerror="this.style.opacity=0.3;this.alt='image not found'">
+        <div class="name">${p.name}</div>
+      `;
+      // Lightbox open
+      const img = wrap.querySelector('img');
+      img.addEventListener('click', () => openLightbox(p.faceImg));
+      return wrap;
+    }
+
+    function rowSelfReportCell(p){
+      const wrap = document.createElement('div');
+      wrap.className = 'cell';
+      const srWrap = document.createElement('div');
+      srWrap.className = 'sr-wrap';
+
+      const chart = document.createElement('div');
+      chart.className = 'sr-line';
+      const canvas = document.createElement('canvas');
+      const tip = document.createElement('div');
+      tip.className = 'sr-tip';
+      chart.appendChild(canvas);
+      chart.appendChild(tip);
+
+      const legend = document.createElement('div');
+      legend.className = 'sr-legend';
+      legend.textContent = 'Values over minutes (1→11). Range: 0–4/5 on a 5-point Likert scale.';
+
+      srWrap.appendChild(chart);
+      srWrap.appendChild(legend);
+      wrap.appendChild(srWrap);
+
+      drawSparkline(canvas, p.selfReport, tip);
+      return wrap;
+    }
+
+    function rowEEGCell(p){
+      const wrap = document.createElement('div');
+      wrap.className = 'cell';
+      wrap.innerHTML = `
+        <img class="eeg-thumb" src="${p.eegImg}" alt="${p.name} EEG example" onerror="this.style.opacity=0.3;this.alt='image not found'">
+      `;
+      wrap.querySelector('img').addEventListener('click', () => openLightbox(p.eegImg));
+      return wrap;
+    }
+
+    function renderSection(sectionId, participants){
+      const grid = document.querySelector(`#${sectionId} .grid`);
+      participants.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.appendChild(rowFaceCell(p));
+        row.appendChild(rowSelfReportCell(p));
+        row.appendChild(rowEEGCell(p));
+        grid.appendChild(row);
+      });
+    }
+
+    // Sparkline drawing with hover tooltip
+    function drawSparkline(canvas, values, tip){
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const W = canvas.clientWidth || 400;
+      const H = canvas.clientHeight || 140;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.scale(dpr,dpr);
+
+      ctx.clearRect(0,0,W,H);
+
+      const padding = {l:28,r:12,t:12,b:18};
+      const plotW = W - padding.l - padding.r;
+      const plotH = H - padding.t - padding.b;
+
+      const minY = 0, maxY = 4; // Likert 0–4 or 0–4/5 as provided
+      const n = values.length;
+      const step = plotW / Math.max(1, n - 1);
+
+      // Axes (light)
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for(let y=0; y<=4; y++){
+        const yy = padding.t + plotH * (1 - (y - minY)/(maxY - minY));
+        ctx.moveTo(padding.l, yy); ctx.lineTo(W - padding.r, yy);
+      }
+      ctx.stroke();
+
+      // Line
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      values.forEach((v,i)=>{
+        const x = padding.l + step * i;
+        const y = padding.t + plotH * (1 - (v - minY)/(maxY - minY));
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+
+      // Points
+      ctx.fillStyle = '#2563eb';
+      values.forEach((v,i)=>{
+        const x = padding.l + step * i;
+        const y = padding.t + plotH * (1 - (v - minY)/(maxY - minY));
+        ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+      });
+
+      // Hover interaction
+      canvas.addEventListener('mousemove', (e)=>{
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const i = Math.max(0, Math.min(n-1, Math.round((x - padding.l)/step)));
+        const v = values[i];
+        const px = padding.l + step * i;
+        const py = padding.t + plotH * (1 - (v - minY)/(maxY - minY));
+        tip.style.left = px + 'px';
+        tip.style.top = py + 'px';
+        tip.textContent = `min ${i+1}: ${v}`;
+        tip.style.display = 'block';
+      });
+      canvas.addEventListener('mouseleave', ()=>{ tip.style.display = 'none'; });
+    }
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    function openLightbox(src){
+      lightboxImg.src = src;
+      lightbox.classList.add('show');
+    }
+    lightbox.addEventListener('click', ()=> lightbox.classList.remove('show'));
+
+    // Render both sections
+    renderSection('videoGroup', data.videoGroup);
+    renderSection('simGroup', data.simGroup);
+  </script>
+</body>
+</html>
