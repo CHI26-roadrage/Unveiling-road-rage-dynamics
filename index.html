@@ -19,6 +19,8 @@
 
       --phase-safe: rgba(16, 185, 129, 0.10);
       --phase-rage: rgba(239, 68, 68, 0.10);
+
+      --media-h: 340px; /* 统一媒体区高度 */
     }
 
     * { box-sizing: border-box; }
@@ -57,17 +59,34 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .media {
+      position: relative;
+      width: 100%;
+      height: var(--media-h);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      background: #fff;
     }
 
     .image-box img {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      background: #f7f7f7;
     }
 
     .image-box p {
-      margin-top: 10px;
+      margin: 0;
       font-weight: 600;
       font-size: 1.05em;
     }
@@ -161,6 +180,7 @@
 
     @media (max-width: 900px) {
       .container { flex-direction: column; }
+      :root { --media-h: 300px; }
     }
 
     @media (max-width: 768px) {
@@ -172,26 +192,27 @@
 </head>
 <body>
 
-  <!-- 标题 -->
   <h1>Unveiling Road Rage Dynamics: Recreating and Modeling Road Rage in Audiovisual and Simulating Environments Based on Real-World Footage</h1>
 
-  <!-- 图片区域：左GIF右图 -->
   <div class="container">
     <div class="image-box">
-      <img src="IMG_0974.GIF" alt="R³-Ftg Dataset">
+      <div class="media">
+        <img src="IMG_0974.GIF" alt="R³-Ftg Dataset" onerror="this.style.opacity=0.35;this.alt='image not found'">
+      </div>
       <p>
         <a href="dataset.html">R<sup>3</sup>-Ftg Dataset</a>
       </p>
     </div>
     <div class="image-box">
-      <img src="IMG_Scene.png" alt="Self Report / EEG Response">
+      <div class="media">
+        <img src="IMG_Scene.png" alt="Self Report / EEG Response" onerror="this.style.opacity=0.35;this.alt='image not found'">
+      </div>
       <p>
-        <a href="result.html">Self Report / EEG Response</a>
+        <a href="result.html">biological Response</a>
       </p>
     </div>
   </div>
 
-  <!-- 摘要 -->
   <div class="abstract">
     <h2>Abstract</h2>
     <p>
@@ -199,7 +220,6 @@
     </p>
   </div>
 
-  <!-- 动态曲线 -->
   <div class="dyn">
     <h2>Dynamics: Anger Rise and Dissipation</h2>
     <div class="muted">X-axis: Time (minutes, 1 → 11) • Y-axis: Anger value • 11 sampled points</div>
@@ -296,12 +316,15 @@
       const { top, bottom } = state.padding;
       const H = canvas.clientHeight;
 
+      const safe = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
+      const rage = getComputedStyle(document.documentElement).getPropertyValue('--phase-rage').trim();
+
       ctx.save();
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
+      ctx.fillStyle = safe;
       ctx.fillRect(x(1), top, x(3) - x(1), H - top - bottom);
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-rage').trim();
+      ctx.fillStyle = rage;
       ctx.fillRect(x(3), top, x(8) - x(3), H - top - bottom);
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--phase-safe').trim();
+      ctx.fillStyle = safe;
       ctx.fillRect(x(8), top, x(11) - x(8), H - top - bottom);
       ctx.restore();
     }
@@ -371,7 +394,9 @@
 
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
-      yt.forEach(tv => { const yy = y(tv); ctx.fillText(tv.toFixed(2), left - 6, yy); });
+      // 这里改名，避免重复声明
+      const yt2 = niceTicks(yMin, yMax, 5).ticks;
+      yt2.forEach(tv => { const yy = y(tv); ctx.fillText(tv.toFixed(2), left - 6, yy); });
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
@@ -445,7 +470,6 @@
         pts.push({ x: x(xm), y: y(v) });
       }
 
-      // Area
       ctx.save();
       ctx.fillStyle = 'rgba(37,99,235,0.08)';
       if (pts.length > 1) {
@@ -457,7 +481,6 @@
       }
       ctx.restore();
 
-      // Line
       ctx.save();
       ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#2563eb';
       ctx.lineWidth = 2;
@@ -467,7 +490,6 @@
       }
       ctx.restore();
 
-      // Points
       ctx.save();
       ctx.fillStyle = '#fff';
       ctx.strokeStyle = 'rgba(37,99,235,0.9)';
@@ -515,14 +537,12 @@
       drawHover(scales);
     }
 
-    // Autoplay animation
     function animate() {
       state.t = Math.min(1, state.t + 0.012);
       draw();
       if (state.t < 1) requestAnimationFrame(animate);
     }
 
-    // Hover tooltip
     canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
       const xCss = e.clientX - rect.left;
@@ -548,7 +568,6 @@
       draw();
     });
 
-    // Initial render + autoplay
     resizeCanvas();
     requestAnimationFrame(() => { state.t = 0; animate(); });
   </script>
